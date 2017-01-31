@@ -1,3 +1,4 @@
+
 // As an air traffic controller 
 // So I can get passengers to a destination 
 // I want to instruct a plane to land at an airport and confirm that it has landed 
@@ -10,6 +11,18 @@
 //To ensure safety 
 //I want to prevent takeoff when weather is stormy 
 
+// As an air traffic controller 
+// To ensure safety 
+// I want to prevent landing when weather is stormy 
+
+// As an air traffic controller 
+// To ensure safety 
+// I want to prevent landing when the airport is full 
+
+// As the system designer
+// So that the software can be used for many different airports
+// I would like a default airport capacity that can be overridden as appropriate
+
 describe('Airport', function() {
 
 	var airport;
@@ -21,7 +34,7 @@ describe('Airport', function() {
 		weatherSunny = new Weather();
 	});
 	
-	describe('accepts a landing plane', function() {
+	describe('accepts a landing plane when weather is sunny', function() {
 
 		beforeEach(function() {
 			spyOn(weatherSunny, "isStormy").and.returnValue(false);
@@ -34,6 +47,42 @@ describe('Airport', function() {
 		it('and stores it', function() {
 			(airport.receive(plane, weatherSunny))
 			expect(airport.planeReturn()).toContain(plane)	
+		});
+	});
+
+	describe('do not accept a landing plane when weather is stormy', function(){
+
+		beforeEach(function(){
+			spyOn(weatherStormy, "isStormy").and.returnValue(true);
+		});
+
+		it ('and throw an error', function(){
+		expect(function() {airport.receive(plane,weatherStormy); } ).toThrowError("Can't land")
+
+		});
+
+		it ('and do not store it', function(){
+			expect(function() {airport.receive(plane,weatherStormy); } ).toThrowError("Can't land")
+			expect(airport.planeReturn()).not.toContain(plane);
+		});
+	});
+
+	describe('do not accept a landing plane when the airport is full', function(){
+
+		beforeEach(function(){
+			spyOn(weatherSunny, "isStormy").and.returnValue(false);
+			for (var i = 0; i < 20 ; i++) {airport.receive(plane,weatherSunny);};
+		});
+
+		it ('and throw an error', function(){
+		expect(function() {airport.receive(plane,weatherSunny); } ).toThrowError("Can't land")
+
+		});
+
+		it ('and do not store it', function(){
+			plane2 = new Plane("full");
+			expect(function() {airport.receive(plane2,weatherSunny); } ).toThrowError("Can't land")
+			expect(airport.planeReturn()).not.toContain(plane2);
 		});
 	});
 
@@ -75,5 +124,11 @@ describe('Airport', function() {
 			});
 	});
 
+	describe('check default can be overriden', function(){
+		it ('return not the default', function(){
+			airport2 = new Airport(5);
+			expect(airport2._capacity).toEqual(5);
+		});
+	});
 });
 
