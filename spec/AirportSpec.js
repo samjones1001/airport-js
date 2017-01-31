@@ -19,11 +19,8 @@ describe('Airport', function() {
 		plane = new Plane();
 		weatherStormy = new Weather();
 	});
-
 	
-
-	
-	describe('accepts a landing plane', function() {
+	/*describe('accepts a landing plane', function() {
 		it('and confirms it has landed', function() {
 			expect(airport.receive(plane)).toEqual("the plane has landed");
 		});
@@ -45,26 +42,27 @@ describe('Airport', function() {
 			airport.takeOff(plane);
 			expect(airport.planeReturn()).not.toContain(plane);
 		});
-	});
+	});*/
 
 	describe('cannot take off a landed plane weather is stormy', function() {
 		
-		beforeEach(function() {
+		/*beforeEach(function() {
 		airport.receive(plane);
 		spyOn(weatherStormy, "isStormy").and.returnValue(true);
-		});
-
+		});*/
 		
-		
-		it('raise an error', function() {			
-			expect(function() {airport.takeOff(plane); } ).toThrow(new Error("Can't take off"))
+		it('raise an error', function() {
+			airport.receive(plane);
+			weatherStormy.isStormy == true
+			expect(function() {airport.takeOff(plane,weatherStormy); } ).toThrowError("Can't take off")
 			//expect(airport.takeOff(plane)).toEqual("the plane has taken off");
 		});
 
-		it('plane is still in array', function() {
+		it('plane still in array', function() {
 			airport.receive(plane);
-			airport.takeOff(plane);
-			//expect(airport.planeReturn()).not.toContain(plane);
+			weatherStormy.isStormy == true
+			airport.takeOff(plane, weatherStormy);
+			expect(airport.planeReturn()).toContain(plane);
 		});
 	});
 
